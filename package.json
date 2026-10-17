@@ -1,0 +1,11 @@
+{
+  "name": "lion-dashboard",
+  "private": true,
+  "type": "module",
+  "description": "Painel comercial da Lion (GHL + Meta + Supabase)",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node --env-file=.env server.mjs",
+    "sync": "node --env-file=.env sync.mjs"
+  }
+}

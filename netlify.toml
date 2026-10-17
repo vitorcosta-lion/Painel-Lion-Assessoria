@@ -1,0 +1,25 @@
+# Publicação no Netlify. Só a pasta public/ é servida; .env, server.mjs e sync.mjs nunca ficam acessíveis pelo link.
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/data"
+  to = "/.netlify/functions/data"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/sync"
+  to = "/.netlify/functions/sync-background"
+  status = 200
+  force = true
+
+# Não aparecer em buscas do Google.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

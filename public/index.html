@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lion Comercial</title>
+<link rel="icon" href="/assets/icon-color.png">
+<style>
+  @font-face { font-family: Poppins; font-weight: 400; src: url(/assets/Poppins-Regular.ttf); font-display: swap; }
+  @font-face { font-family: Poppins; font-weight: 500; src: url(/assets/Poppins-Medium.ttf); font-display: swap; }
+  @font-face { font-family: Poppins; font-weight: 700; src: url(/assets/Poppins-Bold.ttf); font-display: swap; }
+  /* Identidade Lion: RISD Blue como único destaque, Deep Sea no cabeçalho, conteúdo em branco sobre Grey. */
+  :root {
+    color-scheme: light;
+    --blue: #005CFF; --oxford: #001B49; --deep: #000611;
+    --page: #F4F4F4; --surface: #FFFFFF; --border: #E4E6EB;
+    --text: #000611; --text-2: #4A5468; --text-3: #7A8496;
+    --track: #EDF0F5; --serious: #B3261E;
+    /* tons de azul para os motivos de perda (claro/escuro alternados para separar fatias vizinhas) */
+    --c0: #005CFF; --c1: #001B49; --c2: #7FA8FF; --c3: #003AA3; --c4: #B8CEFF; --c5: #4D8DFF; --c6: #00286B; --c7: #DCE7FF; --c-none: #C9CDD6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--text); font: 14px/1.5 Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+  .topbar { background: var(--deep); color: #fff; position: sticky; top: 0; z-index: 10; }
+  .topbar .in { max-width: 1240px; margin: 0 auto; padding: 14px 20px; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand img { height: 26px; display: block; }
+  .brand .t { border-left: 1px solid rgba(255,255,255,.2); padding-left: 16px; }
+  .brand h1 { font-size: 16px; font-weight: 700; margin: 0; line-height: 1.2; }
+  .brand .meta { color: rgba(255,255,255,.6); font-size: 11.5px; }
+  .tabs { display: flex; gap: 4px; }
+  .tabs button { font: inherit; font-size: 13.5px; font-weight: 500; padding: 7px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,.25); background: transparent; color: rgba(255,255,255,.8); cursor: pointer; }
+  .tabs button:hover { color: #fff; border-color: #fff; }
+  .tabs button[aria-selected="true"] { background: var(--blue); border-color: var(--blue); color: #fff; }
+  [hidden] { display: none !important; }
+  .up, .down { font-weight: 500; }
+  .hbars { display: grid; grid-template-columns: max-content 1fr max-content max-content; gap: 9px 12px; align-items: center; margin-top: 14px; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .hbars .track { background: var(--track); border-radius: 4px; height: 14px; }
+  .hbars .fill { background: var(--blue); border-radius: 0 4px 4px 0; height: 14px; min-width: 2px; }
+  .hbars .p { color: var(--text-3); }
+  .heat { background: color-mix(in srgb, var(--blue) calc(var(--w) * 1%), transparent); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 860px) { .two { grid-template-columns: 1fr; } }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .filters { display: flex; background: rgba(255,255,255,.08); border-radius: 999px; padding: 3px; }
+  .filters button { font: inherit; font-size: 13px; padding: 5px 14px; border-radius: 999px; border: 0; background: transparent; color: rgba(255,255,255,.75); cursor: pointer; }
+  .filters button:hover { color: #fff; }
+  .filters button[aria-pressed="true"] { background: #fff; color: var(--deep); font-weight: 500; }
+  .range { color: rgba(255,255,255,.6); font-size: 13px; display: flex; gap: 6px; align-items: center; }
+  .range input { font: inherit; font-size: 13px; padding: 5px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.2); background: transparent; color: #fff; color-scheme: dark; }
+  .refresh { font: inherit; font-size: 13px; font-weight: 500; padding: 7px 18px; border-radius: 999px; border: 0; background: var(--blue); color: #fff; cursor: pointer; }
+  .refresh:hover { filter: brightness(1.1); }
+  .refresh:disabled { opacity: .6; cursor: progress; }
+
+  main { max-width: 1240px; margin: 0 auto; padding: 28px 20px 64px; }
+  section { margin-bottom: 36px; }
+  .sec { display: flex; align-items: center; gap: 12px; margin: 0 0 6px; font-size: 18px; font-weight: 700; }
+  .sec .n { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--blue); color: #fff; font-size: 13px; display: grid; place-items: center; }
+  .secsub { color: var(--text-3); font-size: 12.5px; margin: 0 0 14px 40px; max-width: 760px; }
+  .sub { color: var(--text-3); font-size: 12.5px; }
+  h3 { font-size: 15px; font-weight: 700; margin: 0; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 14px; }
+  .tiles.five { grid-template-columns: repeat(5, 1fr); }
+  @media (max-width: 1000px) { .tiles.five { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 720px) { .tiles, .tiles.five { grid-template-columns: repeat(2, 1fr); } }
+  .tile .label { color: var(--text-2); font-size: 11.5px; font-weight: 500; text-transform: uppercase; letter-spacing: .04em; }
+  .tile .value { font-size: 30px; font-weight: 700; line-height: 1.25; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .tiles.five .value { font-size: 22px; }
+  .tile .note { color: var(--text-3); font-size: 12px; min-height: 18px; }
+  .tile.lead { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .tile.lead .label, .tile.lead .note { color: rgba(255,255,255,.8); }
+
+  .funnels { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 14px; }
+  .funnel .head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .funnel .steps { display: grid; grid-template-columns: max-content 1fr max-content max-content; gap: 8px 10px; align-items: center; margin: 14px 0; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .funnel .steps .n { font-weight: 500; text-align: right; }
+  .funnel .track { background: var(--track); border-radius: 4px; height: 14px; }
+  .funnel .fill { background: var(--blue); border-radius: 0 4px 4px 0; height: 14px; }
+  .funnel .p { color: var(--text-3); min-width: 38px; text-align: right; }
+  .funnel .foot { border-top: 1px solid var(--border); padding-top: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .funnel .foot div { font-size: 11px; color: var(--text-3); }
+  .funnel .foot b { display: block; font-size: 14px; font-weight: 500; color: var(--text); font-variant-numeric: tabular-nums; }
+  .funnel.team { background: var(--deep); border-color: var(--deep); color: #fff; }
+  .funnel.team .track { background: rgba(255,255,255,.12); }
+  .funnel.team .p, .funnel.team .foot div { color: rgba(255,255,255,.6); }
+  .funnel.team .foot { border-color: rgba(255,255,255,.15); }
+  .funnel.team .foot b { color: #fff; }
+  .tag { font-size: 10.5px; font-weight: 500; color: var(--blue); background: #E8F0FF; border-radius: 999px; padding: 2px 8px; margin-left: 8px; text-transform: uppercase; letter-spacing: .04em; vertical-align: middle; }
+
+  .grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .scroll { overflow-x: auto; margin: 12px -20px -18px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: right; padding: 10px 14px; white-space: nowrap; }
+  .two th, .two td { padding-left: 8px; padding-right: 8px; }
+  #campaigns th, #campaigns td { padding-left: 8px; padding-right: 8px; }
+  #campaigns td:first-child { white-space: normal; min-width: 220px; }
+  #sla th, #sla td { padding-left: 9px; padding-right: 9px; }
+  th:first-child, td:first-child { text-align: left; padding-left: 20px; }
+  th:last-child, td:last-child { padding-right: 20px; }
+  thead th { background: var(--page); color: var(--text-2); font-weight: 500; font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; }
+  tbody td { border-top: 1px solid var(--border); }
+  tbody tr:hover td { background: #FAFBFD; }
+  tbody td:first-child { font-weight: 500; }
+  td.zero { color: #C2C7D0; }
+  tfoot td { font-weight: 700; border-top: 2px solid var(--text); }
+
+  .cols { display: flex; align-items: flex-end; gap: 3px; height: 170px; margin-top: 16px; border-bottom: 1px solid var(--border); }
+  .cols .col { flex: 1; background: var(--blue); border-radius: 4px 4px 0 0; min-height: 1px; }
+  .cols .col:hover { background: var(--oxford); }
+  .axis { display: flex; justify-content: space-between; color: var(--text-3); font-size: 11px; margin-top: 6px; }
+  .pie { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-top: 14px; }
+  .pie svg { width: 170px; height: 170px; flex: none; }
+  .pie path { stroke: var(--surface); stroke-width: 2; }
+  .pie path:hover, .pie circle:hover { opacity: .8; }
+  .legend { display: grid; grid-template-columns: 12px 1fr max-content max-content; gap: 7px 10px; align-items: center; flex: 1; min-width: 210px; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; }
+  .legend .p { color: var(--text-3); }
+  .empty { color: var(--text-3); padding: 12px 20px; }
+  #error { color: var(--serious); margin-bottom: 12px; font-weight: 500; }
+</style>
+<meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+<div class="topbar"><div class="in">
+  <div class="brand">
+    <img src="/assets/logo-white.png" alt="Lion">
+    <div class="t">
+      <h1>Relatório Comercial</h1>
+      <div class="meta" id="meta">Carregando…</div>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Visão">
+    <button role="tab" data-view="geral" aria-selected="true">Visão geral</button>
+    <button role="tab" data-view="analise" aria-selected="false">Análise</button>
+  </nav>
+  <div class="actions">
+    <div class="filters" role="group" aria-label="Período">
+      <button data-days="1">Hoje</button>
+      <button data-days="2">48 horas</button>
+      <button data-days="7">7 dias</button>
+      <button data-days="30">30 dias</button>
+      <button data-days="90">90 dias</button>
+    </div>
+    <label class="range">De <input type="date" id="from"></label>
+    <label class="range">até <input type="date" id="to"></label>
+    <button id="refresh" class="refresh">Atualizar dados</button>
+  </div>
+</div></div>
+<main>
+  <div id="error"></div>
+  <div id="view-geral">
+  <section>
+    <h2 class="sec"><span class="n">1</span>Dados gerais</h2>
+    <div class="tiles" id="tiles"></div>
+    <div class="tiles five" id="tilesCost"></div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">2</span>Funil de vendas por membro</h2>
+    <p class="secsub">Leads criados no período. Cada degrau conta quem está naquela etapa do FUNIL LION ou em qualquer etapa posterior; o percentual é sobre os leads do membro.</p>
+    <div class="funnels" id="funnels"></div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">3</span>Volume e perdas</h2>
+    <p class="secsub">Entrada diária de leads e o destino dos que foram marcados como perdidos.</p>
+    <div class="grid">
+      <div class="card">
+        <h3>Leads por dia</h3>
+        <div class="sub">Oportunidades criadas no FUNIL LION</div>
+        <div class="cols" id="daily"></div>
+        <div class="axis" id="dailyAxis"></div>
+      </div>
+      <div class="card">
+        <h3>Motivos de perda</h3>
+        <div class="sub" id="lostSub"></div>
+        <div class="pie" id="reasons"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Perdidos por responsável e motivo</h3>
+      <div class="sub">Leads criados no período que estão com status perdido</div>
+      <div class="scroll"><table id="lostMatrix"></table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">4</span>Tempo do primeiro contato por SDR</h2>
+    <p class="secsub">Minutos de horário comercial (seg a sex, 9h às 19h) entre a entrada do lead e a primeira mensagem ou ligação manual. Mensagens automáticas não contam.</p>
+    <div class="card">
+      <div class="scroll" style="margin-top:-18px"><table id="sla"></table></div>
+    </div>
+  </section>
+  </div>
+
+  <div id="view-analise" hidden>
+  <section>
+    <h2 class="sec"><span class="n">1</span>Comparação com o período anterior</h2>
+    <p class="secsub" id="cmpSub"></p>
+    <div class="card"><div class="scroll" style="margin-top:-18px"><table id="cmp"></table></div></div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">2</span>Vendas ganhas</h2>
+    <p class="secsub">Leads criados no período que estão com status ganho no GHL, em qualquer etapa.</p>
+    <div class="tiles" id="wonTiles"></div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">3</span>Fila parada</h2>
+    <p class="secsub">Leads abertos criados no período, pelo número de dias desde a última mudança de etapa. Quanto mais escura a célula, mais leads parados ali.</p>
+    <div class="two">
+      <div class="card"><h3>Por etapa</h3><div class="scroll"><table id="queueStage"></table></div></div>
+      <div class="card"><h3>Por responsável</h3><div class="scroll"><table id="queueUser"></table></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">4</span>Etapa em que o lead foi perdido</h2>
+    <p class="secsub">Em qual etapa do funil o card estava quando foi marcado como perdido.</p>
+    <div class="card"><div class="hbars" id="lostStage" style="margin-top:0"></div></div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">5</span>Análise por campanha</h2>
+    <p class="secsub">Dados do Gerenciador de Anúncios (conta CA - LION 01) no período. Os leads são os contados pelo Meta; MQL e reuniões por campanha dependem de a UTM chegar no GHL.</p>
+    <div class="card"><div class="scroll" style="margin-top:-18px"><table id="campaigns"></table></div></div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="n">6</span>Evolução semanal</h2>
+    <p class="secsub">Semanas de segunda a domingo, pela data de entrada do lead. A primeira e a última semana podem estar incompletas.</p>
+    <div class="card"><div class="scroll" style="margin-top:-18px"><table id="weekly"></table></div></div>
+  </section>
+  </div>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const int = (n) => Number(n).toLocaleString('pt-BR');
+const brl = (n) => (n == null || !isFinite(n) ? '—' : n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+const pct = (a, b) => (b ? Math.round((a / b) * 100) + '%' : '—');
+const date = (iso) => (iso ? new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '');
+const dateTime = (iso) => (iso ? new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '');
+const mins = (m) => (m == null ? '—' : m < 60 ? Math.round(m) + ' min' : (m / 60).toFixed(1).replace('.', ',') + ' h');
+
+function tile(label, value, note, cls = '') {
+  return `<div class="card tile ${cls}"><div class="label">${label}</div><div class="value">${value}</div><div class="note">${note ?? ''}</div></div>`;
+}
+
+function render(d) {
+  const t = d.total;
+  $('meta').textContent = `${date(d.from + 'T12:00:00')} a ${date(d.to + 'T12:00:00')} · GHL sincronizado em ${dateTime(d.sincronizadoEm) || '—'} · Meta até ${d.metaAte ? date(d.metaAte + 'T12:00:00') : '—'}`;
+  $('tiles').innerHTML = [
+    tile('Leads', int(t.leads), 'gerados no período', 'lead'),
+    tile('MQL', int(t.mql), pct(t.mql, t.leads) + ' dos leads'),
+    tile('Agendamentos', int(t.agendadas), pct(t.agendadas, t.leads) + ' dos leads'),
+    tile('Reuniões realizadas', int(t.realizadas), `${int(t.noShow)} em no-show`),
+  ].join('');
+  $('tilesCost').innerHTML = [
+    tile('Dentro do SLA', pct(t.noSla, t.checados), `até ${d.slaTargetMin} min · mediana ${mins(t.medianaMin)}`),
+    tile('Investimento Meta', brl(d.investimento)),
+    tile('CPL', brl(t.leads ? d.investimento / t.leads : null), 'custo por lead'),
+    tile('Custo por MQL', brl(t.mql ? d.investimento / t.mql : null)),
+    tile('Custo por reunião', brl(t.realizadas ? d.investimento / t.realizadas : null), 'reunião realizada'),
+  ].join('');
+
+  const funnel = (titulo, role, x, cls = '') => {
+    const etapas = role === 'closer' ? [...d.etapasFunil, ...d.etapasCloser] : d.etapasFunil;
+    const steps = [['Leads', x.leads], ...etapas.map((e, i) => [e, x.funil[i]])];
+    return `<div class="card funnel ${cls}"><div class="head"><h3>${esc(titulo)}${role ? `<span class="tag">${esc(role)}</span>` : ''}</h3></div><div class="steps">${
+      steps.map(([etapa, n]) => `<span>${esc(etapa)}</span><div class="track" title="${esc(etapa)}: ${n} (${pct(n, x.leads)})"><div class="fill" style="width:${x.leads ? (n / x.leads) * 100 : 0}%"></div></div><span class="n">${int(n)}</span><span class="p">${pct(n, x.leads)}</span>`).join('')
+    }</div><div class="foot"><div><b>${int(x.noShow)}</b>No-show</div><div><b>${int(x.perdidos)}</b>Perdidos</div><div><b>${pct(x.noSla, x.checados)}</b>Dentro do SLA</div><div><b>${mins(x.medianaMin)}</b>1º contato (mediana)</div></div></div>`;
+  };
+  $('funnels').innerHTML = funnel('Time todo', null, t, 'team') + d.porResponsavel.map((p) => funnel(p.nome, p.role, p)).join('');
+
+  const min1 = (m) => (m == null ? '—' : m.toLocaleString('pt-BR', { maximumFractionDigits: 1 }));
+  const slaRow = (nome, role, x) => `<tr><td>${esc(nome)}${role ? `<span class="tag">${esc(role)}</span>` : ''}</td><td>${int(x.leads)}</td><td>${int(x.contatados)}</td><td>${int(x.checados - x.contatados)}</td><td>${min1(x.mediaMin)}</td><td>${min1(x.medianaMin)}</td><td>${pct(x.noSla, x.checados)}</td>${x.faixas.map((n) => `<td>${int(n)}</td>`).join('')}</tr>`;
+  $('sla').innerHTML = `<thead><tr><th>Responsável</th><th>Leads</th><th>Contatados</th><th>Sem contato</th><th>Média (min)</th><th>Mediana (min)</th><th>Dentro do SLA</th><th>Até 5 min</th><th>5 a 30 min</th><th>30 a 60 min</th><th>Mais de 60 min</th></tr></thead><tbody>${
+    d.porResponsavel.map((p) => slaRow(p.nome, p.role, p)).join('')
+  }</tbody><tfoot>${slaRow('Time todo', null, t)}</tfoot>`;
+
+  const maxDay = Math.max(1, ...d.porDia.map((x) => x.leads));
+  $('daily').innerHTML = d.porDia.map((x) => `<div class="col" style="height:${(x.leads / maxDay) * 100}%" title="${date(x.dia + 'T12:00:00')}: ${x.leads} leads"></div>`).join('');
+  $('dailyAxis').innerHTML = d.porDia.length ? `<span>${date(d.porDia[0].dia + 'T12:00:00')}</span><span>pico: ${maxDay} leads/dia</span><span>${date(d.porDia.at(-1).dia + 'T12:00:00')}</span>` : '';
+
+  $('lostSub').textContent = `${int(t.perdidos)} leads perdidos no período`;
+  const color = (m) => (m.slot < 0 ? 'var(--c-none)' : `var(--c${m.slot % 8})`);
+  if (d.motivosPerda.length) {
+    let angle = -Math.PI / 2;
+    const arc = (m) => {
+      const frac = m.qtd / t.perdidos;
+      const tip = `<title>${esc(m.motivo)}: ${m.qtd} (${pct(m.qtd, t.perdidos)})</title>`;
+      if (frac >= 0.9999) return `<circle cx="100" cy="100" r="90" fill="${color(m)}">${tip}</circle>`;
+      const end = angle + frac * 2 * Math.PI;
+      const pt = (a) => `${(100 + 90 * Math.cos(a)).toFixed(2)} ${(100 + 90 * Math.sin(a)).toFixed(2)}`;
+      const path = `<path d="M100 100 L${pt(angle)} A90 90 0 ${frac > 0.5 ? 1 : 0} 1 ${pt(end)} Z" fill="${color(m)}">${tip}</path>`;
+      angle = end;
+      return path;
+    };
+    $('reasons').innerHTML = `<svg viewBox="0 0 200 200" role="img" aria-label="Motivos de perda">${d.motivosPerda.map(arc).join('')}</svg><div class="legend">${
+      d.motivosPerda.map((m) => `<i style="background:${color(m)}"></i><span>${esc(m.motivo)}</span><span>${int(m.qtd)}</span><span class="p">${pct(m.qtd, t.perdidos)}</span>`).join('')
+    }</div>`;
+  } else {
+    $('reasons').innerHTML = '<div class="empty">Nenhum lead perdido no período.</div>';
+  }
+
+  const motivos = d.motivosPerda.map((m) => m.motivo);
+  const cell = (n) => (n ? `<td>${int(n)}</td>` : '<td class="zero">0</td>');
+  $('lostMatrix').innerHTML = d.perdidosPorResponsavel.length
+    ? `<thead><tr><th>Responsável</th><th>Total perdido</th>${motivos.map((m) => `<th>${esc(m)}</th>`).join('')}</tr></thead><tbody>${
+        d.perdidosPorResponsavel.map((p) => `<tr><td>${esc(p.nome)}${p.role ? `<span class="tag">${esc(p.role)}</span>` : ''}</td><td><strong>${int(p.total)}</strong></td>${motivos.map((m) => cell(p.motivos[m])).join('')}</tr>`).join('')
+      }</tbody><tfoot><tr><td>Total</td><td>${int(t.perdidos)}</td>${d.motivosPerda.map((m) => `<td>${int(m.qtd)}</td>`).join('')}</tr></tfoot>`
+    : '<tr><td class="empty">Nenhum lead perdido no período.</td></tr>';
+}
+
+function renderAnalise(d) {
+  const t = d.total, a = d.anterior.total;
+  const day = (v) => date(v + 'T12:00:00');
+  const div = (x, y) => (y ? x / y : null);
+  $('cmpSub').textContent = `Período atual (${day(d.from)} a ${day(d.to)}) contra o período de mesmo tamanho imediatamente anterior (${day(d.anterior.from)} a ${day(d.anterior.to)}).`;
+  // melhor = 'up' quando subir é bom, 'down' quando cair é bom
+  const rows = [
+    ['Leads', t.leads, a.leads, int, 'up'],
+    ['MQL', t.mql, a.mql, int, 'up'],
+    ['Agendamentos', t.agendadas, a.agendadas, int, 'up'],
+    ['Reuniões realizadas', t.realizadas, a.realizadas, int, 'up'],
+    ['Vendas ganhas', t.ganhos, a.ganhos, int, 'up'],
+    ['Investimento Meta', d.investimento, d.anterior.investimento, brl, null],
+    ['CPL', div(d.investimento, t.leads), div(d.anterior.investimento, a.leads), brl, 'down'],
+    ['Custo por MQL', div(d.investimento, t.mql), div(d.anterior.investimento, a.mql), brl, 'down'],
+    ['Custo por reunião', div(d.investimento, t.realizadas), div(d.anterior.investimento, a.realizadas), brl, 'down'],
+  ];
+  const variation = (cur, prev, better) => {
+    if (cur == null || prev == null || !prev) return '—';
+    const v = ((cur - prev) / prev) * 100;
+    const arrow = v > 0 ? '▲' : v < 0 ? '▼' : '';
+    const note = !better || !v ? '' : (v > 0) === (better === 'up') ? ' · melhor' : ' · pior';
+    return `<span class="${v >= 0 ? 'up' : 'down'}">${arrow} ${Math.abs(v).toLocaleString('pt-BR', { maximumFractionDigits: 0 })}%${note}</span>`;
+  };
+  $('cmp').innerHTML = `<thead><tr><th>Indicador</th><th>Período atual</th><th>Período anterior</th><th>Variação</th></tr></thead><tbody>${
+    rows.map(([nome, cur, prev, fmt, better]) => `<tr><td>${nome}</td><td>${cur == null ? '—' : fmt(cur)}</td><td>${prev == null ? '—' : fmt(prev)}</td><td>${variation(cur, prev, better)}</td></tr>`).join('')
+  }</tbody>`;
+
+  $('wonTiles').innerHTML = [
+    tile('Vendas ganhas', int(t.ganhos), 'no período', 'lead'),
+    tile('Fechamento sobre leads', pct(t.ganhos, t.leads), `${int(t.ganhos)} de ${int(t.leads)} leads`),
+    tile('Fechamento sobre MQL', pct(t.ganhos, t.mql), `${int(t.ganhos)} de ${int(t.mql)} MQL`),
+    tile('Custo por venda', brl(div(d.investimento, t.ganhos)), 'investimento Meta ÷ vendas'),
+  ].join('');
+
+  const queue = (id, rows, label, first) => {
+    const max = Math.max(1, ...rows.flatMap((r) => r.faixas));
+    const totals = d.faixasFila.map((_, i) => rows.reduce((s, r) => s + r.faixas[i], 0));
+    $(id).innerHTML = rows.length
+      ? `<thead><tr><th>${label}</th><th>Abertos</th>${d.faixasFila.map((f) => `<th>${f}</th>`).join('')}</tr></thead><tbody>${
+          rows.map((r) => `<tr><td>${first(r)}</td><td><strong>${int(r.total)}</strong></td>${r.faixas.map((n) => (n ? `<td class="heat" style="--w:${Math.round((n / max) * 45)}">${int(n)}</td>` : '<td class="zero">0</td>')).join('')}</tr>`).join('')
+        }</tbody><tfoot><tr><td>Total</td><td>${int(totals.reduce((x, y) => x + y, 0))}</td>${totals.map((n) => `<td>${int(n)}</td>`).join('')}</tr></tfoot>`
+      : '<tr><td class="empty">Nenhum lead aberto no período.</td></tr>';
+  };
+  queue('queueStage', d.filaPorEtapa, 'Etapa', (r) => esc(r.etapa));
+  queue('queueUser', d.filaPorResponsavel, 'Responsável', (r) => esc(r.nome) + (r.role ? `<span class="tag">${esc(r.role)}</span>` : ''));
+
+  const maxLost = Math.max(1, ...d.perdidosPorEtapa.map((x) => x.qtd));
+  $('lostStage').innerHTML = d.perdidosPorEtapa.length
+    ? d.perdidosPorEtapa.map((x) => `<span>${esc(x.etapa)}</span><div class="track" title="${esc(x.etapa)}: ${x.qtd}"><div class="fill" style="width:${(x.qtd / maxLost) * 100}%"></div></div><span>${int(x.qtd)}</span><span class="p">${pct(x.qtd, t.perdidos)}</span>`).join('')
+    : '<div class="empty">Nenhum lead perdido no período.</div>';
+
+  const num1 = (v) => (v == null ? '—' : v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '%');
+  const campRow = (nome, c, periodo) => `<td>${nome}</td><td>${periodo}</td><td>${brl(c.investimento)}</td><td>${pct(c.investimento, d.investimento)}</td><td>${int(c.impressoes)}</td><td>${int(c.cliques)}</td><td>${num1(c.impressoes ? (c.cliques / c.impressoes) * 100 : null)}</td><td>${brl(div(c.investimento, c.cliques))}</td><td>${int(c.leads)}</td><td>${brl(div(c.investimento, c.leads))}</td><td>${pct(c.leads, c.cliques)}</td>`;
+  const campTotal = d.porCampanha.reduce((s, c) => ({ investimento: s.investimento + c.investimento, impressoes: s.impressoes + c.impressoes, cliques: s.cliques + c.cliques, leads: s.leads + c.leads }), { investimento: 0, impressoes: 0, cliques: 0, leads: 0 });
+  $('campaigns').innerHTML = d.porCampanha.length
+    ? `<thead><tr><th>Campanha</th><th>Veiculou de</th><th>Investimento</th><th>% do total</th><th>Impressões</th><th>Cliques no link</th><th>CTR</th><th>CPC</th><th>Leads (Meta)</th><th>CPL (Meta)</th><th>Lead por clique</th></tr></thead><tbody>${
+        d.porCampanha.map((c) => `<tr>${campRow(esc(c.campanha), c, `${day(c.de)} a ${day(c.ate)}`)}</tr>`).join('')
+      }</tbody><tfoot><tr>${campRow('Total', campTotal, '')}</tr></tfoot>`
+    : '<tr><td class="empty">Nenhuma campanha com investimento no período.</td></tr>';
+
+  $('weekly').innerHTML = `<thead><tr><th>Semana de</th><th>Leads</th><th>MQL</th><th>Agendamentos</th><th>Reuniões realizadas</th><th>Investimento</th><th>CPL</th><th>Custo por MQL</th></tr></thead><tbody>${
+    d.porSemana.map((w) => `<tr><td>${day(w.semana)}</td><td>${int(w.leads)}</td><td>${int(w.mql)}</td><td>${int(w.agendadas)}</td><td>${int(w.realizadas)}</td><td>${brl(w.investimento)}</td><td>${brl(div(w.investimento, w.leads))}</td><td>${brl(div(w.investimento, w.mql))}</td></tr>`).join('')
+  }</tbody>`;
+}
+
+document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('.tabs button').forEach((x) => x.setAttribute('aria-selected', x === b));
+  $('view-geral').hidden = b.dataset.view !== 'geral';
+  $('view-analise').hidden = b.dataset.view !== 'analise';
+  scrollTo(0, 0);
+}));
+
+// Dia de hoje no fuso de Brasília, deslocado em `offset` dias.
+const brToday = (offset = 0) => new Date(Date.now() - 3 * 3600e3 + offset * 86400e3).toISOString().slice(0, 10);
+function setPreset(days) {
+  $('from').value = brToday(-(days - 1));
+  $('to').value = brToday();
+  load();
+}
+let lastRequest = 0;
+async function load() {
+  const from = $('from').value, to = $('to').value;
+  if (!from || !to) return;
+  const request = ++lastRequest; // descarta respostas de pedidos antigos que cheguem atrasadas
+  document.querySelectorAll('.filters button').forEach((b) => b.setAttribute('aria-pressed', to === brToday() && from === brToday(-(Number(b.dataset.days) - 1))));
+  $('error').textContent = '';
+  try {
+    const res = await fetch(`/api/data?from=${from}&to=${to}`);
+    const data = await res.json();
+    if (request !== lastRequest) return;
+    if (!res.ok) throw new Error(data.error);
+    render(data);
+    renderAnalise(data);
+  } catch (e) {
+    if (request === lastRequest) $('error').textContent = 'Erro ao carregar: ' + e.message;
+  }
+}
+document.querySelectorAll('.filters button').forEach((b) => b.addEventListener('click', () => setPreset(Number(b.dataset.days))));
+for (const id of ['from', 'to']) $(id).addEventListener('change', load);
+async function ultimaSincronizacao() {
+  const res = await fetch(`/api/data?from=${$('from').value}&to=${$('to').value}`);
+  return res.ok ? (await res.json()).sincronizadoEm : null;
+}
+$('refresh').addEventListener('click', async () => {
+  const btn = $('refresh');
+  btn.disabled = true;
+  btn.textContent = 'Atualizando… (cerca de 1 min)';
+  $('error').textContent = '';
+  try {
+    const antes = await ultimaSincronizacao();
+    if (antes && Date.now() - Date.parse(antes) < 5 * 60e3) {
+      $('error').textContent = 'Os dados já foram atualizados há poucos minutos.';
+      return;
+    }
+    const res = await fetch('/api/sync', { method: 'POST' });
+    if (res.status === 202) {
+      // Hospedagem em segundo plano (Netlify): espera o fim da sincronização olhando a data do último sync.
+      let concluido = false;
+      for (let i = 0; i < 36 && !concluido; i++) {
+        await new Promise((r) => setTimeout(r, 8000));
+        concluido = (await ultimaSincronizacao()) !== antes;
+      }
+      if (!concluido) throw new Error('a atualização ainda está rodando. Recarregue a página em alguns minutos.');
+    } else {
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+    }
+    await load();
+  } catch (e) {
+    $('error').textContent = 'Erro ao atualizar: ' + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Atualizar dados';
+  }
+});
+setPreset(30);
+</script>
+</body>
+</html>
